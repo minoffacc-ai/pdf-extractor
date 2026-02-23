@@ -176,7 +176,7 @@
         const loading = document.getElementById('loading');
         const status = document.getElementById('status');
 
-        // **PASTE YOUR WEBHOOK URL HERE:**
+        // **PASTE YOUR WEBHOOK URL HERE (from Step 1 of your Zap):**
         const WEBHOOK_URL = 'https://hooks.zapier.com/hooks/catch/26377358/uem5njc/';
 
         // Click to upload
@@ -214,12 +214,12 @@
             e.preventDefault();
 
             if (!fileInput.files[0]) {
-                showStatus('Please select a PDF file', 'error');
+                showStatus('❌ Please select a PDF file', 'error');
                 return;
             }
 
             if (!WEBHOOK_URL.includes('hooks.zapier.com')) {
-                showStatus('⚠️ Webhook URL not configured. Contact the admin.', 'error');
+                showStatus('⚠️ Webhook URL not configured. Please add your webhook URL.', 'error');
                 return;
             }
 
@@ -234,22 +234,22 @@
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     body: formData,
+                    mode: 'no-cors'
                 });
 
                 loading.style.display = 'none';
-
-                if (response.ok) {
-                    showStatus('✅ PDF submitted! Processing images...', 'success');
+                
+                // With no-cors mode, we always get success message regardless
+                showStatus('✅ PDF submitted! Extracting images...', 'success');
+                setTimeout(() => {
                     fileInput.value = '';
                     fileName.style.display = 'none';
                     submitBtn.disabled = false;
-                } else {
-                    showStatus('❌ Error uploading PDF. Try again.', 'error');
-                    submitBtn.disabled = false;
-                }
+                }, 2000);
+                
             } catch (error) {
                 loading.style.display = 'none';
-                showStatus('❌ Connection error. Check your internet.', 'error');
+                showStatus('❌ Connection error. Check your webhook URL.', 'error');
                 submitBtn.disabled = false;
             }
         });
@@ -262,4 +262,3 @@
     </script>
 </body>
 </html>
-
